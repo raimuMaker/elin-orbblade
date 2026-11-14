@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>latest</LangVersion>
+    <ElinPath Condition="'$(ElinPath)' == ''">C:\Program Files\Steam\steamapps\common\Elin</ElinPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="$(ElinPath)\Elin_Data\Managed\mscorlib.dll;$(ElinPath)\Elin_Data\Managed\netstandard.dll;$(ElinPath)\Elin_Data\Managed\System.dll;$(ElinPath)\Elin_Data\Managed\Elin.dll;$(ElinPath)\Elin_Data\Managed\UnityEngine.CoreModule.dll;$(ElinPath)\Elin_Data\Managed\UnityEngine.dll"><Private>false</Private></Reference>
+    <Reference Include="$(ElinPath)\BepInEx\core\BepInEx.Core.dll;$(ElinPath)\BepInEx\core\BepInEx.Unity.dll"><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>
+
+
