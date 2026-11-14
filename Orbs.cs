@@ -82,6 +82,9 @@ namespace Orbblade
             if (t.id == "stone" && t.Num >= Orbs.StoneCost)
                 list.Add("���̃I�[�u���쐬�i��5�j", 80, () => Orbs.Craft(t));
             if (!Orbs.IsSword(t) || t.Num != 1) return;
+            list.Add("���̏K�n�x���m�F", 79, () => Msg.SayRaw(
+                "���̏K�n�x " + Mastery.Get(EClass.pc, Mastery.Fire) +
+                " / �Z��� " + Mastery.FireUnlock));
             if (Orbs.Attached(t) == Mastery.Fire)
             {
                 list.Add("���̃I�[�u�����O��", 80, () => Orbs.Detach(t));
