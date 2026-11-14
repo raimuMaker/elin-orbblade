@@ -6,7 +6,16 @@ namespace Orbblade
     public static class Mastery
     {
         public const string Fire = "fire";
+        public const int FireUnlock = 30;
         private const string Prefix = "raimumaker.orbblade.mastery.";
+
+        public static void RecordFireAttack(Chara character)
+        {
+            int before = Get(character, Fire);
+            int after = Add(character, Fire, 1);
+            if (before < FireUnlock && after >= FireUnlock)
+                Msg.SayRaw("���̌^�E���ݍ��ݎa����K�������I�G�̑��상�j���[����g�p�ł��܂��B");
+        }
 
         public static int Get(Chara character, string element)
         {
