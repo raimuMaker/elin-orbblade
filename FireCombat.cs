@@ -35,6 +35,7 @@ namespace Orbblade
             applying = true;
             try
             {
+                if (Attacker.IsAliveInCurrentZone) Mastery.RecordFireAttack(Attacker);
                 foreach (FireHit hit in hits)
                 {
                     if (!Attacker.IsAliveInCurrentZone || !hit.Target.IsAliveInCurrentZone) continue;
