@@ -7,7 +7,12 @@
     <ElinPath Condition="'$(ElinPath)' == ''">C:\Program Files\Steam\steamapps\common\Elin</ElinPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="tests/**/*.cs" />
     <Reference Include="$(ElinPath)\Elin_Data\Managed\mscorlib.dll;$(ElinPath)\Elin_Data\Managed\netstandard.dll;$(ElinPath)\Elin_Data\Managed\System.dll;$(ElinPath)\Elin_Data\Managed\Plugins.BaseCore.dll;$(ElinPath)\Elin_Data\Managed\Plugins.UI.dll;$(ElinPath)\Elin_Data\Managed\Elin.dll;$(ElinPath)\Elin_Data\Managed\UnityEngine.CoreModule.dll;$(ElinPath)\Elin_Data\Managed\UnityEngine.dll"><Private>false</Private></Reference>
     <Reference Include="$(ElinPath)\BepInEx\core\0Harmony.dll;$(ElinPath)\BepInEx\core\BepInEx.Core.dll;$(ElinPath)\BepInEx\core\BepInEx.Unity.dll"><Private>false</Private></Reference>
   </ItemGroup>
 </Project>
+
+
+
+
