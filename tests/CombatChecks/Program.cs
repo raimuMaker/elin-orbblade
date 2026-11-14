@@ -1,0 +1,99 @@
+using System;
+using System.Reflection;
+using Orbblade;
+
+class Program
+{
+    static void Invoke(Type type, string method, params object[] args) =>
+        type.GetMethod(method, BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, args);
+
+    static void Check(bool value) { if (!value) throw new Exception("Combat check failed"); }
+
+    static FireAttack Begin(ActMelee action)
+    {
+        object[] args = { action, null };
+        Invoke(typeof(FireAttackScope), "Prefix", args);
+        Act.CurrentAct = action;
+        return (FireAttack)args[1];
+    }
+
+    static void Hit(AttackProcess attack, bool success)
+    {
+        object[] args = { attack, default(FireHit) };
+        Invoke(typeof(CaptureFireHit), "Prefix", args);
+        Invoke(typeof(CaptureFireHit), "Postfix", success, args[1]);
+    }
+
+    static void End(FireAttack scope, Exception error = null) =>
+        Invoke(typeof(FireAttackScope), "Finalizer", error, scope);
+
+    static void Main()
+    {
+        Act.CC = new Chara();
+        var target = new Card();
+        var attack = new AttackProcess { CC = Act.CC, TC = target, weapon = new Thing() };
+        var scope = Begin(new ActMelee());
+        Hit(attack, false);
+        Hit(attack, true);
+        attack.weapon = new Thing { Fire = false };
+        Hit(attack, true);
+        Check(target.Damage == 0);
+        End(scope);
+        Check(target.Damage == 3 && FireAttack.Current == null);
+
+        attack.weapon.Fire = true;
+        scope = Begin(new ActMelee());
+        Hit(attack, true);
+        End(scope, new Exception());
+        Check(target.Damage == 3 && FireAttack.Current == null);
+
+        scope = Begin(new ActMelee());
+        Hit(attack, true);
+        target.IsAliveInCurrentZone = false;
+        End(scope);
+        Check(target.Damage == 3);
+
+        target.IsAliveInCurrentZone = true;
+        scope = Begin(new ActMelee());
+        Act.CurrentAct = new ActMelee();
+        Hit(attack, true);
+        End(scope);
+        Check(target.Damage == 3);
+        scope = Begin(new ActMelee());
+        attack.isThrow = true;
+        Hit(attack, true);
+        attack.isThrow = false;
+        attack.IsRanged = true;
+        Hit(attack, true);
+        attack.IsRanged = false;
+        End(scope);
+        Check(target.Damage == 3);
+        Console.WriteLine("PASS: deferred damage, miss, off-hand, exception cleanup, dead target, nested action exclusion");
+    }
+}
+
+namespace HarmonyLib
+{
+    [AttributeUsage(AttributeTargets.Class)]
+    class HarmonyPatch : Attribute { public HarmonyPatch(Type t, string n) {} public HarmonyPatch(Type t, string n, Type[] a) {} }
+}
+class Act { public static Chara CC; public static Act CurrentAct; }
+class ActMelee : Act {}
+class Card
+{
+    public bool IsAliveInCurrentZone = true;
+    public bool isChara = true;
+    public int Damage;
+    public void DamageHP(long damage, int element, int power, AttackSource source, Card origin, bool effect, Thing weapon)
+    { if (element != 910) throw new Exception(); Damage += (int)damage; }
+}
+class Chara : Card { public bool IsPC = true; }
+class Thing : Card { public bool Fire = true; }
+class AttackProcess { public Chara CC; public Card TC; public Thing weapon; public bool isThrow; public bool IsRanged; }
+enum AttackSource { None }
+class SKILL { public const int eleFire = 910; }
+namespace Orbblade
+{
+    class Orbs { public static bool IsSword(Thing t) => t != null; public static string Attached(Thing t) => t.Fire ? "fire" : ""; }
+    class Mastery { public const string Fire = "fire"; }
+}
