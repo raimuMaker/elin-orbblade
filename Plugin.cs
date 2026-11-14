@@ -10,7 +10,7 @@ namespace Orbblade
         private void Awake()
         {
             new Harmony("raimumaker.elin.orbblade").PatchAll();
-            Logger.LogInfo("Orbblade phase 2 loaded.");
+            Logger.LogInfo("Orbblade 0.1.0 loaded: fire orb, mastery and Flame Step.");
         }
     }
 }
