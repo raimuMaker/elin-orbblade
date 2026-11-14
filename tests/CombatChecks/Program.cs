@@ -40,18 +40,21 @@ class Program
         Check(target.Damage == 0);
         End(scope);
         Check(target.Damage == 3 && FireAttack.Current == null);
+        Check(Mastery.Get(Act.CC, Mastery.Fire) == 1);
 
         attack.weapon.Fire = true;
         scope = Begin(new ActMelee());
         Hit(attack, true);
         End(scope, new Exception());
         Check(target.Damage == 3 && FireAttack.Current == null);
+        Check(Mastery.Get(Act.CC, Mastery.Fire) == 1);
 
         scope = Begin(new ActMelee());
         Hit(attack, true);
         target.IsAliveInCurrentZone = false;
         End(scope);
         Check(target.Damage == 3);
+        Check(Mastery.Get(Act.CC, Mastery.Fire) == 2);
 
         target.IsAliveInCurrentZone = true;
         scope = Begin(new ActMelee());
@@ -69,6 +72,14 @@ class Program
         End(scope);
         Check(target.Damage == 3);
         Console.WriteLine("PASS: deferred damage, miss, off-hand, exception cleanup, dead target, nested action exclusion");
+        Mastery.Add(Act.CC, Mastery.Fire, 27);
+        Mastery.RecordFireAttack(Act.CC);
+        Mastery.RecordFireAttack(Act.CC);
+        Check(Msg.Notifications == 1);
+        Check(Mastery.Get(new Chara(), Mastery.Fire) == 0);
+        Mastery.Add(Act.CC, Mastery.Fire, int.MaxValue);
+        Check(Mastery.Get(Act.CC, Mastery.Fire) == int.MaxValue);
+        Console.WriteLine("PASS: mastery threshold, one-time notification, character isolation, overflow protection");
     }
 }
 
@@ -79,21 +90,24 @@ namespace HarmonyLib
 }
 class Act { public static Chara CC; public static Act CurrentAct; }
 class ActMelee : Act {}
-class Card
+public class Card
 {
+    private readonly System.Collections.Generic.Dictionary<string, int> values = new System.Collections.Generic.Dictionary<string, int>();
+    public int GetInt(string key) => values.TryGetValue(key, out int value) ? value : 0;
+    public void SetInt(string key, int value) => values[key] = value;
     public bool IsAliveInCurrentZone = true;
     public bool isChara = true;
     public int Damage;
     public void DamageHP(long damage, int element, int power, AttackSource source, Card origin, bool effect, Thing weapon)
     { if (element != 910) throw new Exception(); Damage += (int)damage; }
 }
-class Chara : Card { public bool IsPC = true; }
-class Thing : Card { public bool Fire = true; }
+public class Chara : Card { public bool IsPC = true; }
+public class Thing : Card { public bool Fire = true; }
 class AttackProcess { public Chara CC; public Card TC; public Thing weapon; public bool isThrow; public bool IsRanged; }
-enum AttackSource { None }
+public enum AttackSource { None }
 class SKILL { public const int eleFire = 910; }
 namespace Orbblade
 {
     class Orbs { public static bool IsSword(Thing t) => t != null; public static string Attached(Thing t) => t.Fire ? "fire" : ""; }
-    class Mastery { public const string Fire = "fire"; }
 }
+class Msg { public static int Notifications; public static void SayRaw(string text) { Notifications++; } }
