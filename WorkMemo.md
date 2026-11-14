@@ -1,6 +1,6 @@
 # Orbblade 実装計画・引き継ぎメモ
 
-すべての実装タスクは未着手。公開資料でバニラの構造を確認済み。導入先の安定版でのAPI確認と実機検証はタスク01から行う。
+タスク01は着手済み。公開資料でバニラの構造を確認済み。導入先の安定版でのAPI確認と実機検証はタスク01から行う。
 
 ## 初版の範囲
 
@@ -69,3 +69,9 @@
 - [ActEffect の公開逆コンパイルコード](https://github.com/Elin-Modding-Resources/Elin-Decompiled/blob/main/Elin/ActEffect.cs)
 - [ElinシートMOD制作の基本](https://elin-modding.net/ja/articles/2_Getting%20Started/sourcesheet_setup)
 - [Elinの装備エンチャント](https://ylvapedia.wiki/wiki/Elin:Equipment/Enchantments/ja)
+
+## 2026-11-14 の実装記録
+
+ローカルのElin.dllとBepInEx 6のDLLを参照するC#プロジェクト、プラグイン入口、キャラ別属性習熟度のGet/Addを追加した。Card.GetInt/SetIntを使用し、キーにはMOD固有の接頭辞を付けた。dotnet build -c Releaseで警告0・エラー0を確認した。ゲーム起動とセーブ再読込は未検証。オーブ、クラフト、戦闘フック、習熟度表示、専用技は未実装。次の作業はアイテム登録と装着操作の実装、および保存復元の実機確認。
+
+ビルドは `dotnet build Orbblade.csproj -c Release`。別のインストール先は `-p:ElinPath="ゲームのフォルダ"` で指定する。ゲーム本体のDLLは各自のインストール先を参照する。
