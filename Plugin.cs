@@ -1,5 +1,6 @@
 using BepInEx;
 using BepInEx.Unity;
+using HarmonyLib;
 
 namespace Orbblade
 {
@@ -8,7 +9,8 @@ namespace Orbblade
     {
         private void Awake()
         {
-            Logger.LogInfo("Orbblade foundation loaded. Gameplay integration is pending.");
+            new Harmony("raimumaker.elin.orbblade").PatchAll();
+            Logger.LogInfo("Orbblade phase 2 loaded.");
         }
     }
 }
